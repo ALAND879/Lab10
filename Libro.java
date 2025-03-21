@@ -304,7 +304,7 @@ public class Libro
     }
 
     public boolean agregarReserva(Reserva reserva) {
-        if (!prestado || reservas.contains(reserva)) {
+        if (reserva == null || reservas.contains(reserva) || !prestado) {
             return false;
         }
         return reservas.offer(reserva);

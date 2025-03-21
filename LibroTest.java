@@ -3,6 +3,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.time.LocalDate;
 
 /**
  * Clase de pruebas unitarias para la clase Libro.
@@ -186,7 +187,65 @@ public class LibroTest
         assertEquals(reserva, libro1.obtenerSiguienteReserva());
     }
 
+    @Test
+    public void testGeneroDefault() {
+        Libro libro = new Libro();
+        assertEquals(GeneroLiterario.getDefault(), libro.getGenero());
+    }
 
+    @Test
+    public void testAsignarGenero() {
+        Libro libro = new Libro();
+        libro.setGenero(GeneroLiterario.FICCION);
+        assertEquals(GeneroLiterario.FICCION, libro.getGenero());
+    }
+
+    @Test
+    public void testConstructorConGenero() {
+        Libro libro = new Libro("El Hobbit", "J.R.R. Tolkien", "9780261102217", 310, GeneroLiterario.FICCION);
+        assertEquals(GeneroLiterario.FICCION, libro.getGenero());
+    }
+
+    @Test
+    public void testGeneroNoNulo() {
+        Libro libro = new Libro();
+        libro.setGenero(null);
+        assertEquals(GeneroLiterario.getDefault(), libro.getGenero());
+    }
+
+    @Test
+    public void testAgregarMantenimiento() {
+        libro1.agregarMantenimiento(LocalDate.of(2023, 10, 1));
+        assertEquals(1, libro1.getMantenimientos().size());
+        assertEquals("Bueno", libro1.getEstado());
+    }
+
+    @Test
+    public void testIncrementarPrestamos() {
+        libro1.incrementarPrestamos();
+        assertEquals(1, libro1.getContadorPrestamos());
+    }
+
+    @Test
+    public void testVerificarDisponibilidad() {
+        assertTrue(libro1.verificarDisponibilidad());
+        libro1.prestarLibro();
+        assertFalse(libro1.verificarDisponibilidad());
+    }
+
+    @Test
+    public void testLibroEnMalEstado() {
+        libro5 = new Libro("El Arte de la Guerra", "Szun Tzu", "8365957639001", 211, "Dañado");
+        assertEquals("Dañado", libro5.getEstado());
+    }
+
+    @Test
+    public void testSetEstado() {
+        libro1.setEstado("Irreparable");
+        assertEquals("Irreparable", libro1.getEstado());
+        libro1.setEstado("Invalido");
+        assertEquals("Bueno", libro1.getEstado()); // Estado inválido debe establecerse a "Bueno"
+    }
 
     /**
      * Limpia el entorno después de cada prueba.

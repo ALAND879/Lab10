@@ -47,13 +47,17 @@ public class Reserva {
         return activa;
     }
 
+    public void activar() {
+        this.activa = true;
+    }
+
     public void cancelar() {
         this.activa = false;
     }
 
     @Override
     public String toString() {
-        return "Reserva [id=" + id +
+        return "Reserva: [id=" + id +
                ", usuario=" + usuario.getNombre() +
                ", libro=" + libro.getTitulo() +
                ", fechaReserva=" + fechaReserva +

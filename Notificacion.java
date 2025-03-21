@@ -22,12 +22,12 @@ public class Notificacion {
     }
 
     private String validarTipo(String type) {
-        if (!type.equals("Vencimiento de prestamo próximo") && !type.equals("Prestamo vencido") && !type.equals("Nuevos libros disponibles")) {
-            return "Notificación";
-        }
-        else{
+        if (type.equals(PRESTAMO_PROXIMO_VENCER) ||
+                type.equals(PRESTAMO_VENCIDO) ||
+                type.equals(RESERVA_DISPONIBLE)) {
             return type;
         }
+        return "Notificación";
     }
 
     public String getMensaje() {

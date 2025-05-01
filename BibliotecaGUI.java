@@ -263,31 +263,11 @@ public class BibliotecaGUI extends JFrame {
         mnuHistorial.addActionListener(e -> mostrarHistorialPrestamos());
 
         // Hacer dialogo
-        mnuBarras.addActionListener(e -> {
-            TestGrafico grafico = new TestGrafico("Gráfica de Barras");
-            grafico.setSize(600, 600);
-            grafico.setVisible(true);
-        });
-        mnuPastel.addActionListener(e -> {
-            TestGrafico grafico = new TestGrafico("Gráfica de Pastel");
-            grafico.setSize(600, 600);
-            grafico.setVisible(true);
-        });
-        mnuLineal.addActionListener(e -> {
-            TestGrafico grafico = new TestGrafico("Gráfica Lineal");
-            grafico.setSize(600, 600);
-            grafico.setVisible(true);
-        });
-        mnuDispersion.addActionListener(e -> {
-            TestGrafico grafico = new TestGrafico("Gráfica de Dispersión");
-            grafico.setSize(600, 600);
-            grafico.setVisible(true);
-        });
-        mnuRadar.addActionListener(e -> {
-            TestGrafico grafico = new TestGrafico("Gráfica de Radar");
-            grafico.setSize(600, 600);
-            grafico.setVisible(true);
-        });
+        mnuBarras.addActionListener(e -> mostrarDialogoGraficas(1, "Gráfica de Barras"));
+        mnuPastel.addActionListener(e -> mostrarDialogoGraficas(2, "Gráfica de Pastel"));
+        mnuLineal.addActionListener(e -> mostrarDialogoGraficas(3, "Gráfica Lineal"));
+        mnuDispersion.addActionListener(e -> mostrarDialogoGraficas(4, "Gráfica de Dispersión"));
+        mnuRadar.addActionListener(e -> mostrarDialogoGraficas(5, "Gráfica de Radar"));
 
 
         // Creación del lis Items de menu catalogo
@@ -329,6 +309,11 @@ public class BibliotecaGUI extends JFrame {
 
         // Establecer la barra de menús en el frame
         setJMenuBar(menuBar);
+    }
+
+    private void mostrarDialogoGraficas(int tipoGrafico, String titulo) {
+        DialogoGraficas dialogo = new DialogoGraficas(this, biblioteca, tipoGrafico, titulo);
+        dialogo.setVisible(true);
     }
 
     private void mostrarHistorialPrestamos() {
@@ -527,6 +512,50 @@ public class BibliotecaGUI extends JFrame {
         }
     }
 
+    private void generarHistorialPrestamos() {
+        // Crear historial de prestamos para las graficas
+        Libro[] librosHistorial = {
+                new Libro("El Hobbit", "J.R.R. Tolkien", "9788445073803", 310),
+                new Libro("La Odisea", "Homero", "9788491050742", 448),
+                new Libro("El retrato de Dorian Gray", "Oscar Wilde", "9788491052005", 304),
+                new Libro("Moby Dick", "Herman Melville", "9788491051572", 752)
+        };
+
+        for (Libro libro : librosHistorial) {
+            biblioteca.agregarLibro(libro);
+        }
+
+        List<Usuario> usuarios = biblioteca.getUsuarios();
+
+        for (int i = 0; i < 30; i++) {
+            Libro libroSeleccionado = null;
+            while (libroSeleccionado == null || libroSeleccionado.isPrestado()) {
+                int indiceLibro = (int) (Math.random() * librosHistorial.length);
+                libroSeleccionado = librosHistorial[indiceLibro];
+            }
+
+            int indiceUsuario = (int) (Math.random() * usuarios.size());
+            Usuario usuarioSeleccionado = usuarios.get(indiceUsuario);
+
+            if (usuarioSeleccionado.solicitarPrestamo(libroSeleccionado)) {
+                libroSeleccionado.setPrestado(true);
+
+                String idPrestamo = String.valueOf(Prestamo.generarId());
+                Prestamo prestamo = new Prestamo(idPrestamo, usuarioSeleccionado, libroSeleccionado);
+
+                biblioteca.agregarPrestamoHist(prestamo);
+
+                if (i < 29) {
+                    if (prestamo.procesarDevolucion()) {
+                        libroSeleccionado.setPrestado(false);
+                    }
+                }
+            }
+        }
+
+        System.out.println("Se generaron 30 préstamos y 29 devoluciones para el historial");
+    }
+
     private void llenaBase() {
         biblioteca.agregarLibro(new Libro("Don Quijote de la Mancha", "Miguel de Cervantes", "9788424922498", 863));
         biblioteca.agregarLibro(new Libro("Cien años de soledad", "Gabriel García Márquez", "9780307474728", 417));
@@ -553,6 +582,9 @@ public class BibliotecaGUI extends JFrame {
                 biblioteca.agregarLibro(libro1984);
             }
 
+
+            // Generar Historial para graficas
+        generarHistorialPrestamos();
 
         actualizarTablaLibros(biblioteca.getLibros());
     }

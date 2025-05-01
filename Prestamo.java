@@ -82,7 +82,11 @@ public class Prestamo {
     public LocalDate getFechaDevolucionEsperada() { 
         return fechaDevolucionEsperada; 
     }
-    
+
+    public static int generarId() {
+        return (int) (Math.random() * 10000); // Genera un ID aleatorio
+    }
+
     /**
      * Obtiene la fecha real de devolución.
      * @return Fecha real de devolución, null si aún no se ha devuelto

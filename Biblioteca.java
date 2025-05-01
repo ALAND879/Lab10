@@ -26,7 +26,9 @@ public class Biblioteca {
     /** Mapa de empleados de la biblioteca.*/
     private Map<String, Empleado> empleados;
     private Map<String, Integer> prestamosmensuales = new HashMap<>();
+    private List<Prestamo> prestamos = new ArrayList<>();
     ManejoNotificaciones notificaciones = new ManejoNotificaciones();
+
 
     /**
      * Constructor de la biblioteca.
@@ -41,6 +43,23 @@ public class Biblioteca {
         this.empleados = new HashMap<>();
         this.libros = new ArrayList<>();
         this.usuarios = new HashSet<>();
+    }
+
+    public Usuario buscarUsuarioPorID(String id) {
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId().equals(id)) {
+                return usuario;
+            }
+        }
+        return null;
+    }
+
+    public List<Usuario> getUsuarios() {
+        return new ArrayList<>(usuarios);
+    }
+
+    public List<Libro> getLibros() {
+        return libros;
     }
 
     /**
@@ -289,6 +308,22 @@ public class Biblioteca {
             i++;
         }
     }
+
+    // Implementar el método buscarLibroPorISBN en la clase Biblioteca
+    public Libro buscarLibroPorISBN(String isbn) {
+        for (Libro libro : libros) { // libros es la lista de libros en la biblioteca
+            if (libro.getIsbn().equals(isbn)) {
+                return libro;
+            }
+        }
+        return null; // Retorna null si no se encuentra el libro
+    }
+
+    // Implementar el método agregarPrestamo en la clase Biblioteca
+    public void agregarPrestamo(Prestamo prestamo) {
+        prestamos.add(prestamo); // prestamos es la lista de préstamos en la biblioteca
+    }
+
 
     private List<Prestamo> obtenerPrestamosActivos() {
         List<Prestamo> prestamosActivos = new ArrayList<>();

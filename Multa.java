@@ -8,7 +8,24 @@ public class Multa {
     private final Usuario usuario;
     private final Libro libro;
     private boolean pagada;
+    private boolean vencido;
+    private double monto;
 
+    public boolean isVencido() {
+        return vencido;
+    }
+
+    public void setVencido(boolean vencido) {
+        this.vencido = vencido;
+    }
+
+    public double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(double monto) {
+        this.monto = monto;
+    }
     public Multa(Usuario usuario, Libro libro) {
         this.montoPago = 0.0;
         this.fechaGeneracion = LocalDate.now();

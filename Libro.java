@@ -26,7 +26,15 @@ public class Libro
    private int contadorPrestamos = 0;
     private Queue<Reserva> reservas;
     private GeneroLiterario genero;
+    private Multa multa;
 
+    public Multa getMulta() {
+        return multa;
+    }
+
+    public void setMulta(Multa multa) {
+        this.multa = multa;
+    }
     /**
      * Constructor por defecto que inicializa un libro con valores predeterminados.
      * El título se establece como "Sin título", el autor como "Desconocido",

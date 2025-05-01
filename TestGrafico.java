@@ -2,7 +2,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 public class TestGrafico extends Frame {
-    private int tipoGrafico = 4; // 0: Biblioteca, 1: Barras, 2: Pastel, 3: Lineal, 4: Dispersion, 5: Radar
+    private int tipoGrafico = 3; // 0: Biblioteca, 1: Barras, 2: Pastel, 3: Lineal, 4: Dispersion, 5: Radar
     private DiagramaBiblioteca graficaBiblioteca;
     private int[] valores = {4, 5, 2, 6, 7, 3, 9 };
     private String[] etiquetas = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"};

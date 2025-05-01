@@ -169,6 +169,10 @@ public class Usuario extends Persona {
         return prestamosRealizados;
     }
 
+    public int getCategoria() {
+        return this.categoria;
+    }
+
     private void setLimitesPorCategoria() {
         switch (categoria) {
             case USUARIO_REGULAR:

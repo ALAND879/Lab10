@@ -11,7 +11,32 @@ public class DiagramaBiblioteca extends Canvas implements MouseListener, MouseMo
     private Color[][] estadoCubiculos = new Color[4][4];
     private Color[] estadoMesas = new Color[6];
     private Rectangle botonTemaArea;
+    private int libroUbicacion = -1;
 
+    private void marcarUbicacion(Graphics2D g2d, int numLibrero) {
+        // Determinar en qué estantería se encuentra basado en el rango
+        int x = 0, y = 0;
+        if (numLibrero >= 100 && numLibrero <= 200) { x = 140; y = 130; }
+        else if (numLibrero >= 201 && numLibrero <= 300) { x = 140; y = 230; }
+        else if (numLibrero >= 301 && numLibrero <= 400) { x = 140; y = 330; }
+        else if (numLibrero >= 401 && numLibrero <= 500) { x = 140; y = 430; }
+        else if (numLibrero >= 501 && numLibrero <= 600) { x = 660; y = 130; }
+        else if (numLibrero >= 601 && numLibrero <= 700) { x = 660; y = 230; }
+        else if (numLibrero >= 701 && numLibrero <= 800) { x = 660; y = 330; }
+        else if (numLibrero >= 801 && numLibrero <= 900) { x = 660; y = 430; }
+
+        // Dibujar X en rojo
+        g2d.setColor(Color.RED);
+        g2d.setStroke(new BasicStroke(3.0f));
+        int size = 20;
+        g2d.drawLine(x - size/2, y - size/2, x + size/2, y + size/2);
+        g2d.drawLine(x - size/2, y + size/2, x + size/2, y - size/2);
+    }
+
+    public void setLibroUbicacion(int ubicacion) {
+        this.libroUbicacion = ubicacion;
+        repaint();
+    }
 
     public DiagramaBiblioteca() {
         botonTemaArea = new Rectangle(600, 550, 120, 30);
@@ -168,6 +193,11 @@ public class DiagramaBiblioteca extends Canvas implements MouseListener, MouseMo
         g2d.drawString("Reservado", 350, 605);
         g2d.drawString("Leyenda:", 50, 600);
         g2d.drawString("Disponible", 150, 605);
+
+        // Si hay ubicación definida, marcarla
+        if (libroUbicacion >= 0) {
+            marcarUbicacion((Graphics2D)g, libroUbicacion);
+        }
     }
 
     private boolean isDentroCubiculo(int x, int y) {

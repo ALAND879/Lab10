@@ -126,7 +126,7 @@ public class Prestamo {
     if (estado == ACTIVO) {
         fechaDevolucionReal = LocalDate.now();
         libro.devolverLibro();  // Primero marcamos el libro como disponible
-        if (usuario.devolverLibro(libro)) {  // Pasamos el libro como parámetro
+        if (usuario.devolverLibroUsr(libro)) {  // Pasamos el libro como parámetro
             estado = DEVUELTO;
             return true;
         }

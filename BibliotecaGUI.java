@@ -2,13 +2,12 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.table.DefaultTableModel;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BibliotecaGUI extends JFrame {
     private JMenuBar menuBar;
-    private JMenu mnuArchivo, mnuCatalogo, mnuPrestamo, mnuUsuarios;
+    private JMenu mnuEstadistica, mnuCatalogo, mnuPrestamo, mnuUsuarios;
     private JTextField txtBusqueda;
     private JButton btnBuscar, btnNuevoLibro, btnBuscarLibro, btnEliminarLibro, btnListarLibros,btnUbicarLibro;
     private JPanel pnlPrincipal, pnlBusqueda, pnlAcciones;
@@ -166,17 +165,57 @@ public class BibliotecaGUI extends JFrame {
 
     private void crearMenu() {
         menuBar = new JMenuBar();
-        mnuArchivo = new JMenu("Archivo");
+        mnuEstadistica = new JMenu("Estadísticas");
         mnuCatalogo = new JMenu("Catalogo");
         mnuPrestamo = new JMenu("Préstamo");
         mnuUsuarios = new JMenu("Usuarios");
         mnuInfo = new JMenu("Acerca de");
 
-        menuBar.add(mnuArchivo);
+        menuBar.add(mnuEstadistica);
         menuBar.add(mnuCatalogo);
         menuBar.add(mnuPrestamo);
         menuBar.add(mnuUsuarios);
         menuBar.add(mnuInfo);
+
+        // Creación del lis Items de menu Estadisticas
+        JMenuItem mnuBarras = new JMenuItem("Grafica de Barras");
+        JMenuItem mnuPastel = new JMenuItem("Grafica de Pastel");
+        JMenuItem mnuLineal = new JMenuItem("Grafica de Lineal");
+        JMenuItem mnuDispersion = new JMenuItem("Grafica de Dispersion");
+        JMenuItem mnuRadar = new JMenuItem("Grafica de Radar");
+
+        mnuEstadistica.add(mnuBarras);
+        mnuEstadistica.add(mnuPastel);
+        mnuEstadistica.add(mnuLineal);
+        mnuEstadistica.add(mnuDispersion);
+        mnuEstadistica.add(mnuRadar);
+
+        mnuBarras.addActionListener(e -> {
+            TestGrafico grafico = new TestGrafico("Gráfica de Barras");
+            grafico.setSize(600, 600);
+            grafico.setVisible(true);
+        });
+        mnuPastel.addActionListener(e -> {
+            TestGrafico grafico = new TestGrafico("Gráfica de Pastel");
+            grafico.setSize(600, 600);
+            grafico.setVisible(true);
+        });
+        mnuLineal.addActionListener(e -> {
+            TestGrafico grafico = new TestGrafico("Gráfica Lineal");
+            grafico.setSize(600, 600);
+            grafico.setVisible(true);
+        });
+        mnuDispersion.addActionListener(e -> {
+            TestGrafico grafico = new TestGrafico("Gráfica de Dispersión");
+            grafico.setSize(600, 600);
+            grafico.setVisible(true);
+        });
+        mnuRadar.addActionListener(e -> {
+            TestGrafico grafico = new TestGrafico("Gráfica de Radar");
+            grafico.setSize(600, 600);
+            grafico.setVisible(true);
+        });
+
 
         // Creación del lis Items de menu catalogo
         JMenuItem mnuNuevoLibro = new JMenuItem("Agregar Libro");
@@ -283,59 +322,118 @@ public class BibliotecaGUI extends JFrame {
         }
     }
 
-    private void devolverLibro() {
-        int filaSeleccionada = tablaLibros.getSelectedRow();
-        if (filaSeleccionada >= 0) {
-            String isbn = (String) tablaLibros.getValueAt(filaSeleccionada, 2);
-            // Buscar el libro en la biblioteca
-            Libro libroSeleccionado = biblioteca.buscarLibroPorISBN(isbn);
+   private void devolverLibro() {
+       int filaSeleccionada = tablaLibros.getSelectedRow();
+       if (filaSeleccionada >= 0) {
+           // Obtener el libro seleccionado de la biblioteca
+           String isbn = (String) tablaLibros.getValueAt(filaSeleccionada, 2);
+           String estadoStr = (String) tablaLibros.getValueAt(filaSeleccionada, 4);
+           Libro libroSeleccionado = biblioteca.buscarLibroPorISBN(isbn);
 
-            if (libroSeleccionado != null && libroSeleccionado.isPrestado()) {
-                // Devolver el libro
-                libroSeleccionado.setPrestado(false);
-                // revisar si tiene multa
-                Multa multa = libroSeleccionado.getMulta();
-                if (multa != null) {
-                    if (multa.isVencido()) {
-                        JOptionPane.showMessageDialog(this, "El libro tiene una multa vencida de: $" + multa.getMonto(), "Multa", JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "El libro tiene una multa pendiente de: $" + multa.getMonto(), "Multa", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-                actualizarTablaLibros(biblioteca.getLibros());
-                actualizarEstado("Libro devuelto exitosamente: " + libroSeleccionado.getTitulo());
-            } else {
-                JOptionPane.showMessageDialog(this, "El libro no está prestado o no se encontró", "Error", JOptionPane.WARNING_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Por favor, seleccione un libro para devolver", "Error", JOptionPane.WARNING_MESSAGE);
-        }
-    }
+            // Apoyo para depuracion de error
+           //System.out.println("Libro seleccionado: " + (libroSeleccionado != null ? libroSeleccionado.getTitulo() : "null"));
+           //System.out.println("Estado según tabla: " + estadoStr);
+           //System.out.println("Estado según objeto: " + (libroSeleccionado != null ? (libroSeleccionado.isPrestado() ? "Prestado" : "No prestado") : "N/A"));
+
+           // Verificamos si el estado en la tabla es "Prestado" incluso si el objeto dice lo contrario
+           boolean deberiaEstarPrestado = "Prestado".equals(estadoStr);
+
+           if (libroSeleccionado != null && (libroSeleccionado.isPrestado() || deberiaEstarPrestado)) {
+               // Forzar el estado a prestado si hay inconsistencia
+               if (deberiaEstarPrestado && !libroSeleccionado.isPrestado()) {
+                   libroSeleccionado.setPrestado(true);
+                   System.out.println("Corrigiendo inconsistencia: libro marcado como prestado");
+               }
+
+               // Buscar el préstamo asociado al libro
+               Prestamo prestamo = biblioteca.buscarPrestamoPorLibro(libroSeleccionado);
+               System.out.println("Resultado de búsqueda de préstamo: " + (prestamo != null ? "Encontrado" : "No encontrado"));
+
+               // Si no se encuentra, intentar buscar por ISBN
+               if (prestamo == null) {
+                   System.out.println("Intentando buscar préstamo por ISBN: " + isbn);
+                   for (Prestamo p : biblioteca.getPrestamos()) {
+                       if (p.getLibro().getIsbn().equals(isbn)) {
+                           prestamo = p;
+                           System.out.println("Préstamo encontrado por ISBN alternativo");
+                           break;
+                       }
+                   }
+               }
+
+               if (prestamo != null) {
+                   // Procesar la devolución del préstamo
+                   Usuario usuarioPrestamo = prestamo.getUsuario();
+                   System.out.println("Usuario del préstamo: " + usuarioPrestamo.getNombre());
+
+                   if (prestamo.procesarDevolucion()) {
+                       // Una vez devuelto, actualizar el libro y eliminar el préstamo
+                       libroSeleccionado.setPrestado(false);
+                       biblioteca.eliminarPrestamo(prestamo);
+                       System.out.println("Préstamo procesado correctamente");
+
+                       // Revisar si tiene multa
+                       Multa multa = libroSeleccionado.getMulta();
+                       if (multa != null) {
+                           if (multa.isVencido()) {
+                               JOptionPane.showMessageDialog(this,
+                                   "El libro tiene una multa vencida de: $" + multa.getMonto() +
+                                   "\nUsuario: " + usuarioPrestamo.getNombre(),
+                                   "Multa", JOptionPane.WARNING_MESSAGE);
+                           } else {
+                               JOptionPane.showMessageDialog(this,
+                                   "El libro tiene una multa pendiente de: $" + multa.getMonto() +
+                                   "\nUsuario: " + usuarioPrestamo.getNombre(),
+                                   "Multa", JOptionPane.INFORMATION_MESSAGE);
+                           }
+                       }
+
+                       actualizarTablaLibros(biblioteca.getLibros());
+                       actualizarEstado("Préstamo devuelto exitosamente: " + libroSeleccionado.getTitulo() +
+                                       " por " + usuarioPrestamo.getNombre());
+                   } else {
+                       System.out.println("Error al procesar la devolución");
+                       JOptionPane.showMessageDialog(this,
+                           "No se pudo procesar la devolución del préstamo.\nVerifique el estado del usuario y del libro.",
+                           "Error", JOptionPane.ERROR_MESSAGE);
+                   }
+               } else {
+                   System.out.println("No se encontró préstamo para el libro: " + isbn);
+                   // Mostrar información de depuración
+                   List<Prestamo> prestamos = biblioteca.getPrestamos();
+                   System.out.println("Total de préstamos en la biblioteca: " + prestamos.size());
+                   for (Prestamo p : prestamos) {
+                       System.out.println("Préstamo ID: " + p.getId() + ", Libro: " + p.getLibro().getTitulo() + ", ISBN: " + p.getLibro().getIsbn());
+                   }
+
+                   JOptionPane.showMessageDialog(this, "No se encontró un préstamo asociado al libro.",
+                       "Error", JOptionPane.WARNING_MESSAGE);
+               }
+           } else {
+               JOptionPane.showMessageDialog(this, "El libro no está prestado o no se encontró.",
+                   "Error", JOptionPane.WARNING_MESSAGE);
+           }
+       } else {
+           JOptionPane.showMessageDialog(this, "Por favor, seleccione un libro para devolver.",
+               "Error", JOptionPane.WARNING_MESSAGE);
+       }
+   }
 
     private void realizarPrestamo() {
         int filaSeleccionada = tablaLibros.getSelectedRow();
         if (filaSeleccionada >= 0) {
-            String titulo = (String) tablaLibros.getValueAt(filaSeleccionada, 0);
-            String autor = (String) tablaLibros.getValueAt(filaSeleccionada, 1);
             String isbn = (String) tablaLibros.getValueAt(filaSeleccionada, 2);
 
             // Buscar el libro en la biblioteca
             Libro libroSeleccionado = biblioteca.buscarLibroPorISBN(isbn);
 
             if (libroSeleccionado != null && !libroSeleccionado.isPrestado()) {
-                // Crear un usuario temporal para el préstamo (puedes modificar esto según tu lógica)
-                Usuario usuario = new Usuario("Usuario Temporal", "usuario@correo.com");
+                DialogoPrestamo dialogo = new DialogoPrestamo(this, biblioteca, libroSeleccionado);
+                dialogo.setVisible(true);
 
-                // Crear el préstamo
-                Prestamo prestamo = new Prestamo(String.valueOf(Prestamo.generarId()), usuario, libroSeleccionado);
-
-                // Registrar el préstamo
-                if (prestamo.registrarPrestamo()) {
-                    biblioteca.agregarPrestamo(prestamo);
+                if (dialogo.isPrestamoRealizado()) {
                     actualizarTablaLibros(biblioteca.getLibros());
-                    actualizarEstado("Préstamo registrado exitosamente para el libro: " + titulo);
-                } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo registrar el préstamo", "Error", JOptionPane.ERROR_MESSAGE);
+                    actualizarEstado("Préstamo registrado exitosamente para el libro: " + libroSeleccionado.getTitulo());
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "El libro ya está prestado o no se encontró", "Error", JOptionPane.WARNING_MESSAGE);

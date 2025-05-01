@@ -17,6 +17,7 @@ public class Usuario extends Persona {
     private int prestamosRealizados;
     private int categoria;
 
+
     public static final int USUARIO_REGULAR = 0;
     public static final int USUARIO_PROFESOR = 1;
     public static final int USUARIO_INVESTIGADOR = 2;
@@ -84,7 +85,7 @@ public class Usuario extends Persona {
      * 
      * @return true si la devolución fue exitosa, false si no hay libro prestado
      */
-    public boolean devolverLibro(Libro libro) {    
+    public boolean devolverLibroUsr(Libro libro) {
         if (librosPrestados.contains(libro)) {
             libro.devolverLibro();
             librosPrestados.remove(libro);
@@ -171,6 +172,10 @@ public class Usuario extends Persona {
 
     public int getCategoria() {
         return this.categoria;
+    }
+
+    public void eliminarPrestamo(Prestamo prestamo) {
+        prestamosRealizados -= 1; // Asumiendo que `prestamosRealizados` es una lista de préstamos del usuario
     }
 
     private void setLimitesPorCategoria() {

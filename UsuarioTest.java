@@ -68,7 +68,7 @@ public class UsuarioTest
     @Test
     public void testDevolverLibro() {
         usuario.solicitarPrestamo(libro);
-        assertTrue(usuario.devolverLibro(libro));
+        assertTrue(usuario.devolverLibroUsr(libro));
         assertNull(usuario.getLibrosPrestados());
     }
     
@@ -112,13 +112,13 @@ public class UsuarioTest
     public void testPrestamosRealizados() {
         usuario.solicitarPrestamo(libro);
         assertEquals(1, usuario.getPrestamosRealizados());
-        usuario.devolverLibro(libro);
+        usuario.devolverLibroUsr(libro);
         assertEquals(0, usuario.getPrestamosRealizados());
     }
 
     @Test
     public void testDevolverLibroSinPrestamoActivo() {
-        assertFalse(usuario.devolverLibro(libro));
+        assertFalse(usuario.devolverLibroUsr(libro));
     }
 
     @Test

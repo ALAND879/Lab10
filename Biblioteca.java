@@ -26,10 +26,25 @@ public class Biblioteca {
     /** Mapa de empleados de la biblioteca.*/
     private Map<String, Empleado> empleados;
     private Map<String, Integer> prestamosmensuales = new HashMap<>();
-    private List<Prestamo> prestamos = new ArrayList<>();
+    private List<Prestamo> prestamos;
     ManejoNotificaciones notificaciones = new ManejoNotificaciones();
 
+    public Prestamo buscarPrestamoPorLibro(Libro libro) {
+        for (Prestamo prestamo : prestamos) { // Asumiendo que existe una lista `prestamos` en la clase
+            if (prestamo.getLibro().equals(libro)) {
+                return prestamo;
+            }
+        }
+        return null;
+    }
 
+    public List<Prestamo> getPrestamos() {
+        return prestamos;
+    }
+
+    public void eliminarPrestamo(Prestamo prestamo) {
+        prestamos.remove(prestamo); // Asumiendo que `prestamos` es una lista de préstamos
+    }
     /**
      * Constructor de la biblioteca.
      * Inicializa las colecciones y establece los datos básicos.
@@ -43,6 +58,7 @@ public class Biblioteca {
         this.empleados = new HashMap<>();
         this.libros = new ArrayList<>();
         this.usuarios = new HashSet<>();
+        this.prestamos = new ArrayList<>();
     }
 
     public Usuario buscarUsuarioPorID(String id) {

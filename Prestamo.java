@@ -159,7 +159,14 @@ public class Prestamo {
         }
         return false;
     }
-    
+
+    /**
+     * Obtiene la fecha de devolución del préstamo.
+     * @return Fecha en que se devolvió el libro, o null si aún no ha sido devuelto
+     */
+    public LocalDate getFechaDevolucion() {
+        return fechaDevolucionReal;
+    }
     /**
      * Retorna una representación en cadena del objeto Prestamo.
      * Incluye información sobre el ID del préstamo, usuario, libro,

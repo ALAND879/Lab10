@@ -27,7 +27,21 @@ public class Biblioteca {
     private Map<String, Empleado> empleados;
     private Map<String, Integer> prestamosmensuales = new HashMap<>();
     private List<Prestamo> prestamos;
+    private List<Prestamo> prestamoshist = new ArrayList<>();
     ManejoNotificaciones notificaciones = new ManejoNotificaciones();
+
+    //Hacer que cada insercion de prestamos se registre en prestamoshist
+    public void agregarPrestamoHist(Prestamo prestamo) {
+        prestamoshist.add(prestamo);
+    }
+
+    /**
+     * Obtiene la lista de préstamos históricos.
+     * @return Lista con todos los préstamos históricos
+     */
+    public List<Prestamo> getPrestamosHist() {
+        return prestamoshist;
+    }
 
     public Prestamo buscarPrestamoPorLibro(Libro libro) {
         for (Prestamo prestamo : prestamos) { // Asumiendo que existe una lista `prestamos` en la clase

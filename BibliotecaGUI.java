@@ -16,6 +16,7 @@ public class BibliotecaGUI extends JFrame {
     private JLabel lblEstado;
     private Biblioteca biblioteca;
     private JMenu mnuInfo;
+    private JButton btnEditarLibro;
 
 
     private void realizaBusquedaRapida() {
@@ -120,16 +121,15 @@ public class BibliotecaGUI extends JFrame {
         // Panel de acciones
         pnlAcciones = new JPanel();
         btnNuevoLibro = new JButton("Nuevo Libros");
-        btnBuscarLibro = new JButton("Editar");
+        btnBuscarLibro = new JButton("Buscar");
+        btnEditarLibro = new JButton("Editar");
         btnEliminarLibro = new JButton("Eliminar");
         btnUbicarLibro = new JButton("Ubicar Libro");
         btnListarLibros = new JButton("Listar Libros");
 
-
-
         // Panel de acciones
         pnlAcciones.add(btnNuevoLibro);
-        pnlAcciones.add(btnBuscarLibro);
+        pnlAcciones.add(btnEditarLibro);
         pnlAcciones.add(btnEliminarLibro);
         pnlAcciones.add(btnUbicarLibro);
         pnlAcciones.add(btnListarLibros);
@@ -149,6 +149,8 @@ public class BibliotecaGUI extends JFrame {
             actualizarTablaLibros(biblioteca.getLibros());
             actualizarEstado("Se listaron todos los libros disponibles en la biblioteca");
         });
+        btnEditarLibro.addActionListener(e -> mostrarDialogoEditarLibro());
+        btnEliminarLibro.addActionListener(e -> eliminarLibro());
 
         //  Barra de Estado
         lblEstado = new JLabel(" Listo");
@@ -157,6 +159,72 @@ public class BibliotecaGUI extends JFrame {
         this.add(pnlPrincipal, BorderLayout.CENTER);
         this.add(lblEstado,BorderLayout.SOUTH);
 
+    }
+
+    private void mostrarDialogoEditarLibro() {
+        int filaSeleccionada = tablaLibros.getSelectedRow();
+        if (filaSeleccionada >= 0) {
+            String isbn = (String) tablaLibros.getValueAt(filaSeleccionada, 2);
+            Libro libroSeleccionado = biblioteca.buscarLibroPorISBN(isbn);
+
+            if (libroSeleccionado != null) {
+                DialogoEditarLibro dialogo = new DialogoEditarLibro(this, biblioteca, libroSeleccionado);
+                dialogo.setVisible(true);
+
+                if (dialogo.isEditadoExitoso()) {
+                    actualizarTablaLibros(biblioteca.getLibros());
+                    actualizarEstado("Libro editado exitosamente: " + libroSeleccionado.getTitulo());
+                }
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "No se pudo encontrar el libro seleccionado",
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione un libro para editar",
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void eliminarLibro() {
+        int filaSeleccionada = tablaLibros.getSelectedRow();
+        if (filaSeleccionada >= 0) {
+            String isbn = (String) tablaLibros.getValueAt(filaSeleccionada, 2);
+            Libro libroSeleccionado = biblioteca.buscarLibroPorISBN(isbn);
+
+            if (libroSeleccionado != null) {
+                int confirmacion = JOptionPane.showConfirmDialog(
+                        this,
+                        "¿Está seguro que desea eliminar el libro \"" + libroSeleccionado.getTitulo() + "\"?",
+                        "Confirmar eliminación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    biblioteca.eliminarLibro(libroSeleccionado);
+                    actualizarTablaLibros(biblioteca.getLibros());
+                    actualizarEstado("Libro eliminado: " + libroSeleccionado.getTitulo());
+                }
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se pudo encontrar el libro seleccionado",
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            }
+        } else {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Por favor, seleccione un libro para eliminar",
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
     }
 
     private void actualizarEstado(String mensaje) {
@@ -183,13 +251,18 @@ public class BibliotecaGUI extends JFrame {
         JMenuItem mnuLineal = new JMenuItem("Grafica de Lineal");
         JMenuItem mnuDispersion = new JMenuItem("Grafica de Dispersion");
         JMenuItem mnuRadar = new JMenuItem("Grafica de Radar");
+        JMenuItem mnuHistorial = new JMenuItem("Historial de Prestamos");
 
         mnuEstadistica.add(mnuBarras);
         mnuEstadistica.add(mnuPastel);
         mnuEstadistica.add(mnuLineal);
         mnuEstadistica.add(mnuDispersion);
         mnuEstadistica.add(mnuRadar);
+        mnuEstadistica.add(mnuHistorial);
 
+        mnuHistorial.addActionListener(e -> mostrarHistorialPrestamos());
+
+        // Hacer dialogo
         mnuBarras.addActionListener(e -> {
             TestGrafico grafico = new TestGrafico("Gráfica de Barras");
             grafico.setSize(600, 600);
@@ -258,6 +331,12 @@ public class BibliotecaGUI extends JFrame {
         setJMenuBar(menuBar);
     }
 
+    private void mostrarHistorialPrestamos() {
+        DialogoHistorialPrestamos dialogo = new DialogoHistorialPrestamos(this, biblioteca);
+        dialogo.setVisible(true);
+        actualizarEstado("Historial de préstamos consultado");
+    }
+
     private void mostrarDialogoListadoPrestamos() {
         DialogoListadoprestamos dialogo = new DialogoListadoprestamos(this, biblioteca);
         dialogo.setVisible(true);
@@ -308,7 +387,6 @@ public class BibliotecaGUI extends JFrame {
         }
     }
 
-    // Método auxiliar para obtener el nombre de la categoría
     private String obtenerNombreCategoria(int categoria) {
         switch (categoria) {
             case Usuario.USUARIO_REGULAR:
@@ -434,6 +512,12 @@ public class BibliotecaGUI extends JFrame {
                 if (dialogo.isPrestamoRealizado()) {
                     actualizarTablaLibros(biblioteca.getLibros());
                     actualizarEstado("Préstamo registrado exitosamente para el libro: " + libroSeleccionado.getTitulo());
+                    // Añadir prestamo al historial de prestamos
+                    // Añadir prestamo al historial de prestamos
+                                        Prestamo nuevoPrestamo = dialogo.getPrestamo();
+                                        if (nuevoPrestamo != null) {
+                                            biblioteca.agregarPrestamoHist(nuevoPrestamo);
+                                        }
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "El libro ya está prestado o no se encontró", "Error", JOptionPane.WARNING_MESSAGE);
@@ -442,7 +526,6 @@ public class BibliotecaGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Por favor, seleccione un libro para realizar el préstamo", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }
-
 
     private void llenaBase() {
         biblioteca.agregarLibro(new Libro("Don Quijote de la Mancha", "Miguel de Cervantes", "9788424922498", 863));

@@ -8,6 +8,7 @@ public class DialogoPrestamo extends JDialog {
     private Libro libro;
     private JComboBox<Usuario> cmbUsuarios;
     private boolean prestamoRealizado = false;
+    Prestamo prestamo;
 
     public DialogoPrestamo(JFrame parent, Biblioteca biblioteca, Libro libro) {
         super(parent, "Registrar Préstamo", true);
@@ -40,7 +41,7 @@ public class DialogoPrestamo extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 Usuario usuarioSeleccionado = (Usuario) cmbUsuarios.getSelectedItem();
                 if (usuarioSeleccionado != null) {
-                    Prestamo prestamo = new Prestamo(String.valueOf(Prestamo.generarId()), usuarioSeleccionado, libro);
+                    prestamo = new Prestamo(String.valueOf(Prestamo.generarId()), usuarioSeleccionado, libro);
                     if (prestamo.registrarPrestamo()) {
                         biblioteca.agregarPrestamo(prestamo);
                         libro.setPrestado(true);
@@ -60,4 +61,9 @@ public class DialogoPrestamo extends JDialog {
     public boolean isPrestamoRealizado() {
         return prestamoRealizado;
     }
+
+    public Prestamo getPrestamo() {
+        return prestamo;
+    }
+
 }
